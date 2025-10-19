@@ -4,7 +4,7 @@
 
 ## Candidate Name
 
-**Candidate Name:** ___________________
+**Candidate Name:** D Visal kumar Rao
 
 
 ---
