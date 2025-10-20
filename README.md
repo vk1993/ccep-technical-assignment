@@ -93,3 +93,55 @@ Add clear documentation in your repo that explains:
 
 ## Candidate Note on Evaluation
 Submissions will be evaluated on correctness, code quality, documentation clarity, adherence to MACH principles, and test coverage.
+
+
+---
+
+## ⚙️ Module Responsibilities
+
+| Module | Description |
+|---------|-------------|
+| **openapispec/** | Contains the canonical `openapi.yaml` contract and uses `openapi-generator-maven-plugin` to generate code (API interfaces + DTOs). |
+| **api/** | Implements the generated interfaces with business logic, persistence, validation, and error handling using **Spring Boot 3.5 / Java 17**. |
+| **Parent POM** | Defines shared versions, dependency management, and builds both modules together. |
+
+---
+
+## 📘 OpenAPI Specification
+
+**File:** `openapispec/src/main/resources/openapi.yaml`  
+**Version:** 3.0.3  
+**Generator:** [OpenAPI Generator Maven Plugin](https://github.com/OpenAPITools/openapi-generator)
+
+### Includes:
+- `x-api-key`, `x-correlation-id`, and `x-request-id` headers on all endpoints
+- Standard error responses (`400`, `401`, `404`, `500`, `503`, `504`)
+- Reusable schemas for `HealthGoal`, `CreateHealthGoalRequest`, `UpdateHealthGoalRequest`, and `ErrorResponse`
+- Jakarta Validation (`@NotBlank`, `@Size`, etc.)
+- API key authentication via header `x-api-key`
+
+### To Regenerate Code:
+```bash
+cd openapispec
+mvn clean generate-sources
+```
+
+### Access the Service
+
+Base URL: http://localhost:8080
+
+Swagger UI: http://localhost:8080/swagger-ui.html
+
+OpenAPI Spec: http://localhost:8080/openapi.yaml
+
+### 🧱 Technology Stack
+
+| **Category**     | **Technology** |
+|------------------|----------------|
+| **Language**     | Java 17 |
+| **Framework**    | Spring Boot 3.5.6 |
+| **OpenAPI Tools** | openapi-generator-maven-plugin 7.7.0 |
+| **Validation**   | Jakarta Validation + Hibernate Validator |
+| **API Docs**     | springdoc-openapi-starter-webmvc-ui |
+| **Testing**      | JUnit 5, MockMvc |
+| **Build Tool**   | Maven (multi-module) |

@@ -1,0 +1,337 @@
+openapi: 3.0.3
+info:
+  title: Health Goal Service API
+  version: 1.0.0
+  description: >
+    Health Goal Service API allows clients to create, view, update, and delete user-specific health goals.  
+    Designed using MACH principles (Microservices, API-first, Cloud-native, Headless).
+  x-api-id: demoapi_id
+  contact:
+    name: Visal Rao
+    email: visalrao19@gmail.com
+
+servers:
+  - url: https://api.example.com/v1
+    description: Production
+  - url: http://localhost:8080/bayer/v1/hgapi
+    description: Local development
+
+tags:
+  - name: HealthGoals
+    description: Endpoints for managing consumer health goals
+
+paths:
+  /health-goals:
+    get:
+      summary: Retrieve all health goals
+      operationId: listHealthGoals
+      description: Returns a list of all health goals for all users (paginated in production).
+      tags: [HealthGoals]
+      security:
+        - bayerApiKey: []
+      parameters:
+        - $ref: '#/components/parameters/ApiKey'
+        - $ref: '#/components/parameters/CorrelationId'
+        - $ref: '#/components/parameters/RequestId'
+      responses:
+        '200':
+          description: Successfully retrieved list of health goals.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/HealthGoal'
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '500': { $ref: '#/components/responses/InternalError' }
+        '503': { $ref: '#/components/responses/ServiceUnavailable' }
+        '504': { $ref: '#/components/responses/GatewayTimeout' }
+
+    post:
+      summary: Create a new health goal
+      operationId: createHealthGoal
+      description: Creates a new goal record for a specific user.
+      tags: [HealthGoals]
+      security:
+        - bayerApiKey: []
+      parameters:
+        - $ref: '#/components/parameters/ApiKey'
+        - $ref: '#/components/parameters/CorrelationId'
+        - $ref: '#/components/parameters/RequestId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateHealthGoalRequest'
+      responses:
+        '201':
+          description: Health goal successfully created.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HealthGoal'
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '500': { $ref: '#/components/responses/InternalError' }
+        '503': { $ref: '#/components/responses/ServiceUnavailable' }
+        '504': { $ref: '#/components/responses/GatewayTimeout' }
+
+  /health-goals/{id}:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        description: Unique identifier (UUID) of the health goal.
+        schema:
+          type: string
+          format: uuid
+
+    get:
+      summary: Retrieve a health goal by ID
+      operationId: getHealthGoalById
+      description: Fetch a specific health goal using its unique identifier.
+      tags: [HealthGoals]
+      security:
+        - bayerApiKey: []
+      parameters:
+        - $ref: '#/components/parameters/ApiKey'
+        - $ref: '#/components/parameters/CorrelationId'
+        - $ref: '#/components/parameters/RequestId'
+      responses:
+        '200':
+          description: Successfully retrieved the health goal.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HealthGoal'
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '500': { $ref: '#/components/responses/InternalError' }
+        '503': { $ref: '#/components/responses/ServiceUnavailable' }
+        '504': { $ref: '#/components/responses/GatewayTimeout' }
+
+    put:
+      summary: Update an existing health goal
+      operationId: updateHealthGoal
+      description: Updates details of a health goal such as title, target, unit, or status.
+      tags: [HealthGoals]
+      security:
+        - bayerApiKey: []
+      parameters:
+        - $ref: '#/components/parameters/ApiKey'
+        - $ref: '#/components/parameters/CorrelationId'
+        - $ref: '#/components/parameters/RequestId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateHealthGoalRequest'
+      responses:
+        '200':
+          description: Health goal successfully updated.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HealthGoal'
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '500': { $ref: '#/components/responses/InternalError' }
+        '503': { $ref: '#/components/responses/ServiceUnavailable' }
+        '504': { $ref: '#/components/responses/GatewayTimeout' }
+
+    delete:
+      summary: Delete a health goal
+      operationId: deleteHealthGoal
+      description: Permanently removes a health goal by ID.
+      tags: [HealthGoals]
+      security:
+        - bayerApiKey: []
+      parameters:
+        - $ref: '#/components/parameters/ApiKey'
+        - $ref: '#/components/parameters/CorrelationId'
+        - $ref: '#/components/parameters/RequestId'
+      responses:
+        '204':
+          description: Successfully deleted. No content returned.
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '500': { $ref: '#/components/responses/InternalError' }
+        '503': { $ref: '#/components/responses/ServiceUnavailable' }
+        '504': { $ref: '#/components/responses/GatewayTimeout' }
+
+components:
+  securitySchemes:
+    bayerApiKey:
+      type: apiKey
+      in: header
+      name: x-api-key
+      description: API key used for authenticating requests to the Health Goal Service.
+
+  parameters:
+    ApiKey:
+      name: x-api-key
+      in: header
+      required: true
+      schema:
+        type: string
+        example: ABC123-XYZ456
+      description: API key for client authorization (required for all requests).
+
+    CorrelationId:
+      name: x-correlation-id
+      in: header
+      required: false
+      schema:
+        type: string
+        example: 8f8f8b88-3b3c-4df7-91b8-66a2dbba21c2
+      description: Header for correlating requests across distributed systems and tracing.
+
+    RequestId:
+      name: x-request-id
+      in: header
+      required: false
+      schema:
+        type: string
+        example: 2f51c820-54f4-4e6e-bf39-9df0de43cb7a
+      description: Unique identifier generated by the client for idempotency and tracking.
+
+  responses:
+    BadRequest:
+      description: Bad request — invalid parameters or request body.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+    Unauthorized:
+      description: Unauthorized — missing or invalid API key.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+    NotFound:
+      description: Resource not found — the specified ID does not exist.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+    InternalError:
+      description: Internal server error — unexpected server-side failure.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+    ServiceUnavailable:
+      description: Service unavailable — dependency or database offline.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+    GatewayTimeout:
+      description: Gateway timeout — request took too long to complete.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+
+  schemas:
+    ErrorResponse:
+      type: object
+      description: Standard structure for error messages returned by the API.
+      properties:
+        error:
+          type: string
+          description: Machine-readable error code (e.g., `validation_failed`, `not_found`).
+        message:
+          type: string
+          description: Human-readable description of the error.
+        traceId:
+          type: string
+          description: Trace or correlation ID for debugging.
+      required: [error, message]
+
+    HealthGoal:
+      type: object
+      description: Represents a single user's health-related goal.
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Unique identifier for the health goal.
+        userId:
+          type: string
+          description: Identifier of the user who owns the goal.
+        title:
+          type: string
+          description: Short title summarizing the goal.
+        description:
+          type: string
+          description: Detailed information or notes about the goal.
+        target:
+          type: integer
+          description: Numeric value representing the goal’s objective (e.g., 5).
+          example: 5
+        unit:
+          type: string
+          description: Unit of measurement for the goal (e.g., kg, steps, minutes).
+          example: kg
+        startDate:
+          type: string
+          format: date
+          description: Date when the goal tracking begins.
+        endDate:
+          type: string
+          format: date
+          description: Expected completion date for the goal.
+        status:
+          type: string
+          description: Current state of the goal.
+          enum: [ACTIVE, COMPLETED, CANCELLED]
+      required: [id, userId, title, target, unit, status]
+
+    CreateHealthGoalRequest:
+      type: object
+      description: Request body for creating a new health goal.
+      properties:
+        userId:
+          type: string
+          description: Identifier of the user creating the goal.
+        title:
+          type: string
+          description: Short descriptive title for the goal.
+        description:
+          type: string
+          description: Optional notes about the goal.
+        target:
+          type: integer
+          description: Target numeric value (e.g., 10,000 steps or 5 kg).
+        unit:
+          type: string
+          description: Measurement unit for the target.
+          example: steps
+        startDate:
+          type: string
+          format: date
+          description: Start date for tracking the goal.
+        endDate:
+          type: string
+          format: date
+          description: Optional end date for the goal.
+      required: [userId, title, target, unit]
+
+    UpdateHealthGoalRequest:
+      allOf:
+        - $ref: '#/components/schemas/CreateHealthGoalRequest'
+        - type: object
+          description: Request body for updating an existing health goal.
+          properties:
+            status:
+              type: string
+              description: New status of the goal.
+              enum: [ACTIVE, COMPLETED, CANCELLED]
+          required: [status]
