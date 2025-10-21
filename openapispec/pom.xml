@@ -11,6 +11,7 @@
 	</parent>
 
 	<artifactId>healthgoal-openapispec</artifactId>
+	<name>healthgoal-openapispec</name>
 	<version>0.0.1-SNAPSHOT</version>
 	<description>Health Goal API (Contract-first via OpenAPI Generator)</description>
 

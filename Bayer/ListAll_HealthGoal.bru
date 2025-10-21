@@ -1,0 +1,22 @@
+meta {
+  name: ListAll_HealthGoal
+  type: http
+  seq: 5
+}
+
+get {
+  url: http://localhost:8080/bayer/v1/health-goals
+  body: none
+  auth: inherit
+}
+
+headers {
+  Content-Type: application/json
+  x-api-key: api_key
+  x-correlation-id: corelation_id
+  x-request-id: request_id
+}
+
+settings {
+  encodeUrl: true
+}

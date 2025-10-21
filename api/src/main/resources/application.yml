@@ -16,7 +16,7 @@ spring:
 server:
   port: 8080
 
-
+# Note we can pull this one from ASM or Vault and insert them at the start of the application
 healthgoal:
   api:
     x_api_key: "api_key"

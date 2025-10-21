@@ -1,0 +1,26 @@
+meta {
+  name: DeleteHealthGoal_ById
+  type: http
+  seq: 8
+}
+
+delete {
+  url: http://localhost:8080/bayer/v1/health-goals/{id}
+  body: none
+  auth: inherit
+}
+
+headers {
+  Content-Type: application/json
+  x-api-key: api_key
+  x-correlation-id: corelation_id
+  x-request-id: request_id
+}
+
+assert {
+  : 
+}
+
+settings {
+  encodeUrl: true
+}

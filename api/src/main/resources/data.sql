@@ -1,7 +1,4 @@
--- ============================================
--- INSERT SAMPLE USER
--- ============================================
-
+-- sample user adding.
 INSERT INTO users (id, username, email)
 VALUES (
     'f7c962b7-0cc3-4f2d-8b3a-df0c5a9b128e',
@@ -10,9 +7,7 @@ VALUES (
 )
 ON CONFLICT (id) DO NOTHING;
 
--- ============================================
--- INSERT SAMPLE HEALTH GOALS
--- ============================================
+-- dummy data feeding
 
 INSERT INTO health_goals (
     id,

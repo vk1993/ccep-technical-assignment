@@ -34,21 +34,16 @@ public class ApiFilter extends OncePerRequestFilter {
         String xapi = request.getHeader(ApiConstants.X_API_KEY);
         String correlationId = request.getHeader(ApiConstants.X_CORRELATION_ID);
         String requestId = request.getHeader(ApiConstants.X_REQUEST_ID);
-        MDC.put("correlationId",correlationId);
+
+        MDC.put("correlationId", correlationId);
+        MDC.put("requestId", requestId);
         try {
             if (!x_api_key.equals(xapi)) {
                 log.error("missing or invalid API key | URI={} | x-correlation-id={} | x-request-id={}",
                         request.getRequestURI(), correlationId, requestId);
 
-                response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-                response.setContentType("application/json");
-                response.getWriter().write("""
-                        {
-                          "error": "unauthorized",
-                          "message": "Missing or invalid API key",
-                          "traceId": "%s"
-                        }
-                        """.formatted(correlationId != null ? correlationId : "N/A"));
+                sendErrorResponse(response, HttpServletResponse.SC_UNAUTHORIZED,
+                        "unauthorized", "Missing or invalid API key", correlationId);
                 return;
             }
             log.info("Authorized request | URI={} | x-correlation-id={} | x-request-id={}",
@@ -56,7 +51,10 @@ public class ApiFilter extends OncePerRequestFilter {
 
             filterChain.doFilter(request, response);
         } catch (Exception e) {
-            throw new Exception(e);
+            log.error("Unhandled error in filter | URI={} | correlationId={} | requestId={}",
+                    request.getRequestURI(), correlationId, requestId, e);
+            sendErrorResponse(response, HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
+                    "internal_error", e.getMessage(), correlationId);
         } finally {
             MDC.clear();
         }
@@ -66,5 +64,18 @@ public class ApiFilter extends OncePerRequestFilter {
     @Override
     protected boolean shouldNotFilter(HttpServletRequest request) throws ServletException {
         return excludedUrl.stream().anyMatch(url -> url.equals(request.getRequestURI()));
+    }
+
+    private void sendErrorResponse(HttpServletResponse response, int status,
+                                   String error, String message, String correlationId) throws IOException {
+        response.setStatus(status);
+        response.setContentType("application/json");
+        response.getWriter().write("""
+                {
+                  "error": "%s",
+                  "message": "%s",
+                  "traceId": "%s"
+                }
+                """.formatted(error, message, correlationId != null ? correlationId : "missing_correlationId"));
     }
 }
