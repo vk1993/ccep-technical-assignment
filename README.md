@@ -90,10 +90,8 @@ Add clear documentation in your repo that explains:
 
 ---
 
-
 ## Candidate Note on Evaluation
 Submissions will be evaluated on correctness, code quality, documentation clarity, adherence to MACH principles, and test coverage.
-
 
 ---
 
@@ -136,12 +134,51 @@ OpenAPI Spec: http://localhost:8080/openapi.yaml
 
 ### 🧱 Technology Stack
 
-| **Category**     | **Technology** |
-|------------------|----------------|
-| **Language**     | Java 17 |
-| **Framework**    | Spring Boot 3.5.6 |
-| **OpenAPI Tools** | openapi-generator-maven-plugin 7.7.0 |
-| **Validation**   | Jakarta Validation + Hibernate Validator |
-| **API Docs**     | springdoc-openapi-starter-webmvc-ui |
-| **Testing**      | JUnit 5, MockMvc |
-| **Build Tool**   | Maven (multi-module) |
+| **Category**       | **Technology** |
+|--------------------|----------------|
+| **Language**       | Java 17 |
+| **Framework**      | Spring Boot 3.5.6 |
+| **OpenAPI Tools**  | openapi-generator-maven-plugin 7.7.0 |
+| **Validation**     | Jakarta Validation + Hibernate Validator |
+| **Database**       | PostgreSQL 16 |
+| **Containerization** | Docker + Docker Compose |
+| **Logging**        | Logback JSON (Logstash encoder) |
+| **Testing**        | JUnit 5, MockMvc |
+| **Build Tool**     | Maven (multi-module) |
+
+
+`curl -X GET "http://localhost:8080/bayer/v1/health-goals" \
+  -H "x-api-key: api_key" \
+  -H "x-correlation-id: abc123" \
+  -H "x-request-id: req-001"`
+
+`curl -X POST "http://localhost:8080/bayer/v1/health-goals" \
+  -H "Content-Type: application/json" \
+  -H "x-api-key: api_key" \
+  -d '{
+    "userId": "f8d6a25b-8a4d-4d0f-8b29-2ef14e4126a1",
+    "title": "Lose Weight",
+    "description": "Target to lose 5 kg in 3 months",
+    "target": 5,
+    "unit": "kg",
+    "startDate": "2025-10-20",
+    "endDate": "2026-01-20"
+  }'`
+
+`curl -X GET "http://localhost:8080/bayer/v1/health-goals/8a43a71b-56e3-4e53-9e64-8f29dcd351cd" \
+-H "x-api-key: api_key" \
+-H "x-correlation-id: abc123" \
+-H "x-request-id: req-003"`
+
+###
+🐳 Run with Docker Compose
+`docker-compose up --build`
+
+| **Endpoint**                           | **HTTP Method** | **Description**                                        | **Request Payload**                                                                                                                                                                    | **Response**                                | **HTTP Status Codes**                           |
+| -------------------------------------- | --------------- | ------------------------------------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------- | ----------------------------------------------- |
+| `/bayer/v1/health-goals`               | **GET**         | Retrieve all health goals for all users                | None                                                                                                                                                                                   | `200 OK` → Array of `HealthGoal` objects    | `200`, `400`, `401`, `500`, `503`, `504`        |
+| `/bayer/v1/health-goals/{id}`          | **GET**         | Retrieve a specific health goal by its ID              | None                                                                                                                                                                                   | `200 OK` → Single `HealthGoal` object       | `200`, `400`, `401`, `404`, `500`, `503`, `504` |
+| `/bayer/v1/health-goals`               | **POST**        | Create a new health goal for a user                    | `CreateHealthGoalRequest`<br/>`json { "userId": "uuid", "title": "string", "description": "string", "target": 5, "unit": "kg", "startDate": "YYYY-MM-DD", "endDate": "YYYY-MM-DD" }`   | `201 Created` → Created `HealthGoal` object | `201`, `400`, `401`, `500`, `503`, `504`        |
+| `/bayer/v1/health-goals/{id}`          | **PUT**         | Update an existing health goal                         | `UpdateHealthGoalRequest`<br/>`json { "title": "string", "description": "string", "target": 6, "unit": "kg", "startDate": "YYYY-MM-DD", "endDate": "YYYY-MM-DD", "status": "ACTIVE" }` | `200 OK` → Updated `HealthGoal` object      | `200`, `400`, `401`, `404`, `500`, `503`, `504` |
+| `/bayer/v1/health-goals/{id}`          | **DELETE**      | Delete a health goal by ID                             | None                                                                                                                                                                                   | `204 No Content`                            | `204`, `400`, `401`, `404`, `500`, `503`, `504` |
+| `/bayer/v1/health-goals/user/{userId}` | **GET**         | Retrieve all health goals belonging to a specific user | None                                                                                                                                                                                   | `200 OK` → Array of `HealthGoal` objects    | `200`, `400`, `401`, `404`, `500`, `503`, `504` |
