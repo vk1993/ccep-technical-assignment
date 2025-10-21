@@ -83,15 +83,10 @@ public class HealthGoalsApiDelegateImpl implements HealthGoalsApiDelegate {
     public ResponseEntity<HealthGoal> getHealthGoalById(
             UUID id, String xApiKey, String xCorrelationId, String xRequestId) {
 
-        return healthGoalRepository.findById(id)
-                .map(goal -> {
-                    log.info("found health goal id={}", id);
-                    return ResponseEntity.ok(healthGoalMapper.toDto(goal));
-                })
-                .orElseGet(() -> {
-                    log.warn("health goal not found for id={}", id);
-                    return ResponseEntity.notFound().build();
-                });
+        HealthGoalEntity entity = healthGoalRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("HealthGoal not found: " + id));
+
+        return ResponseEntity.ok(healthGoalMapper.toDto(entity));
     }
 
     @Override

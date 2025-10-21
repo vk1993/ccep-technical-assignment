@@ -107,7 +107,7 @@ Submissions will be evaluated on correctness, code quality, documentation clarit
 
 ## 📘 OpenAPI Specification
 
-**File:** `openapispec/src/main/resources/openapi.yaml`  
+**File:** `openapispec/src/main/resources/healthGoalAPI.yaml`  
 **Version:** 3.0.3  
 **Generator:** [OpenAPI Generator Maven Plugin](https://github.com/OpenAPITools/openapi-generator)
 
@@ -127,10 +127,6 @@ mvn clean generate-sources
 ### Access the Service
 
 Base URL: http://localhost:8080
-
-Swagger UI: http://localhost:8080/swagger-ui.html
-
-OpenAPI Spec: http://localhost:8080/openapi.yaml
 
 ### 🧱 Technology Stack
 
@@ -182,3 +178,43 @@ OpenAPI Spec: http://localhost:8080/openapi.yaml
 | `/bayer/v1/health-goals/{id}`          | **PUT**         | Update an existing health goal                         | `UpdateHealthGoalRequest`<br/>`json { "title": "string", "description": "string", "target": 6, "unit": "kg", "startDate": "YYYY-MM-DD", "endDate": "YYYY-MM-DD", "status": "ACTIVE" }` | `200 OK` → Updated `HealthGoal` object      | `200`, `400`, `401`, `404`, `500`, `503`, `504` |
 | `/bayer/v1/health-goals/{id}`          | **DELETE**      | Delete a health goal by ID                             | None                                                                                                                                                                                   | `204 No Content`                            | `204`, `400`, `401`, `404`, `500`, `503`, `504` |
 | `/bayer/v1/health-goals/user/{userId}` | **GET**         | Retrieve all health goals belonging to a specific user | None                                                                                                                                                                                   | `200 OK` → Array of `HealthGoal` objects    | `200`, `400`, `401`, `404`, `500`, `503`, `504` |
+
+## Design Decisions
+
+The service was designed following a Contract-First API Development approach using OpenAPI Specification (OAS).
+By defining the API contract upfront (openapispec/src/main/resources/healthgoalAPI.yaml), the team establishes a single source of truth for API structure, data models, and expected request/response patterns.
+
+This approach ensures:
+
+* Early collaboration and alignment between backend, frontend, and QA teams.
+* Consistent and validated request/response formats.
+* Automatic generation of interfaces, DTOs, and documentation via OpenAPI Generator.
+* Reduced chances of contract drift between implementation and documentation.
+
+I have chosen Relational database over Nosql Database , assuming
+
+* Each User can have multiple Health Goals (1:N relationship).
+* Health goals may later relate to progress entries, achievements, reminders, etc.
+* These relationships are best modeled and queried using foreign keys and joins, which are native strengths of SQL databases like PostgreSQL.
+
+## Assumptions
+
+* Authentication and Authorization are delegated to the API Gateway layer (e.g., Google Apigee or AWS API Gateway) to keep this service lightweight and domain-focused.
+* The microservice operates as an internal service within a larger microservices ecosystem, protected by a WAF (Web Application Firewall) and service mesh/network policies.
+* This service still enforces basic validation using an internal x-api-key header for request integrity and audit tracing.
+* Distributed tracing (via OpenTelemetry/Jaeger) and logging (via CloudWatch + Grafana) ensure observability across the ecosystem.
+
+## Automated Testing and Deployment (CI/CD)
+
+We can have a GitHub Actions–based CI/CD pipeline to ensure every code change is automatically built, tested, scanned, and securely deployed to AWS.
+
+| **Stage**                          | **Purpose**                                                                     | **Tools / Actions**                                                            |
+| ---------------------------------- | ------------------------------------------------------------------------------- |--------------------------------------------------------------------------------|
+| **Build & Test**                   | Compile source code, run unit/integration tests, and generate coverage reports. | Maven, JUnit 5, JaCoCo                                                         |
+| **Static Code Analysis**           | Detect code smells, bugs, and maintainability issues.                           | SonarQube (GitHub Action)                                                      |
+| **Dependency & Container Scanning** | Identify open-source dependency vulnerabilities and insecure Docker layers.     | **Snyk** (for dependency scanning), **Wiz CLI** (for container image scanning) |
+| **Build & Publish Image**         | Build Docker image, tag with version and commit SHA, then push to ECR.          | Docker, GitHub Actions, AWS ECR                                                |
+| **Secrets Management**           | Fetch environment secrets securely during the workflow.                         | GitHub Secrets / AWS Secrets Manager/ Vault                                    |
+
+## Database migration
+* we can use database migration tools such as Liqubase, which can help us to maintain the changlogs in our database.
