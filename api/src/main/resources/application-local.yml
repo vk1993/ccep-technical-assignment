@@ -1,8 +1,8 @@
 spring:
   datasource:
-    url:
-    username:
-    password:
+    url: jdbc:postgresql://localhost:5432/healthgoal
+    username: healthgoal_user
+    password: healthgoal_pass
     driver-class-name: org.postgresql.Driver
   jpa:
     hibernate:
@@ -13,8 +13,8 @@ spring:
 #  sql:
 #    init:
 #      mode: always
-#server:
-#  port: 8080
+server:
+  port: 8080
 
 # Note we can pull this one from ASM or Vault and insert them at the start of the application
 healthgoal:

@@ -12,6 +12,7 @@ services:
       - "5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
+      - ./db/init.sql:/docker-entrypoint-initdb.d/init.sql
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U healthgoal_user -d healthgoal"]
       interval: 10s
@@ -20,7 +21,7 @@ services:
 
   api:
     build:
-      context: ./api
+      context: .
       dockerfile: Dockerfile
     container_name: healthgoal-api
     environment:
@@ -36,6 +37,7 @@ services:
       postgres:
         condition: service_healthy
     restart: unless-stopped
+    entrypoint: ["sh", "/app/entrypoint.sh"]
 
 volumes:
   postgres_data:
