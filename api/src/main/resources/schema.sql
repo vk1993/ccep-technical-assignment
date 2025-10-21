@@ -1,25 +1,19 @@
--- ============================================
+
 -- Database: healthgoal
 -- Schema: public
--- ============================================
 
 -- Enable UUID extension (needed for UUID primary keys)
 CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 
--- ============================================
--- USERS TABLE
--- ============================================
 
+-- USERS TABLE
 CREATE TABLE IF NOT EXISTS users (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     username VARCHAR(255) NOT NULL UNIQUE,
     email VARCHAR(255) NOT NULL UNIQUE
 );
 
--- ============================================
 -- HEALTH GOALS TABLE
--- ============================================
-
 CREATE TABLE IF NOT EXISTS health_goals (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     user_id UUID NOT NULL,
@@ -37,10 +31,7 @@ CREATE TABLE IF NOT EXISTS health_goals (
         ON DELETE CASCADE
 );
 
--- ============================================
 -- INDEXES
--- ============================================
-
 -- Faster lookups for user's goals
 CREATE INDEX IF NOT EXISTS idx_health_goals_user_id
     ON health_goals(user_id);
@@ -49,10 +40,7 @@ CREATE INDEX IF NOT EXISTS idx_health_goals_user_id
 CREATE INDEX IF NOT EXISTS idx_health_goals_status
     ON health_goals(status);
 
--- ============================================
 -- ENUM-LIKE CONSTRAINTS (for status)
--- ============================================
-
 ALTER TABLE health_goals
     ADD CONSTRAINT chk_health_goal_status
     CHECK (status IN ('ACTIVE', 'COMPLETED', 'CANCELLED'));
