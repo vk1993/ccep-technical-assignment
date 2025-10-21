@@ -1,0 +1,22 @@
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/healthgoal
+    username: healthgoal_user
+    password: healthgoal_pass
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+#  sql:
+#    init:
+#      mode: always
+server:
+  port: 8080
+
+
+healthgoal:
+  api:
+    x_api_key: "api_key"

@@ -11,9 +11,7 @@ info:
     email: visalrao19@gmail.com
 
 servers:
-  - url: https://api.example.com/v1
-    description: Production
-  - url: http://localhost:8080/bayer/v1/hgapi
+  - url: http://localhost:8080/bayer/v1
     description: Local development
 
 tags:

@@ -118,15 +118,15 @@
 								ApiUtil.java
 							</supportingFilesToGenerate>
 							<configOptions>
-								<deligationPattern>true</deligationPattern>
-								<interfaceOnly>true</interfaceOnly>
+								<delegatePattern>true</delegatePattern>
+<!--								<interfaceOnly>true</interfaceOnly>-->
 								<useSpringBoot3>true</useSpringBoot3>
-								<useTags>true</useTags>
+<!--								<useTags>true</useTags>-->
 								<dateLibrary>java17</dateLibrary>
-								<performBeanValidation>true</performBeanValidation>
-								<useSpringBoot3>true</useSpringBoot3>
+<!--								<performBeanValidation>true</performBeanValidation>-->
+<!--								<useSpringBoot3>true</useSpringBoot3>-->
 								<useJakartaEe>true</useJakartaEe>
-								<hideGenerationTimestamp>true</hideGenerationTimestamp>
+<!--								<hideGenerationTimestamp>true</hideGenerationTimestamp>-->
 							</configOptions>
 						</configuration>
 					</execution>
@@ -139,6 +139,7 @@
 				<artifactId>maven-compiler-plugin</artifactId>
 				<version>3.11.0</version>
 				<configuration>
+					<release>${maven.compiler.release}</release>
 					<source>${java.version}</source>
 					<target>${java.version}</target>
 					<annotationProcessorPaths>
