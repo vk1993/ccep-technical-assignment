@@ -5,7 +5,7 @@ meta {
 }
 
 put {
-  url: http://localhost:8080/bayer/v1/health-goals
+  url: http://localhost:8080/bayer/v1/health-goals/22a683b1-4e44-48a2-8e2d-43993c034f0e
   body: json
   auth: inherit
 }
@@ -19,14 +19,16 @@ headers {
 
 body:json {
   {
-          "userId": "f7c962b7-0cc3-4f2d-8b3a-df0c5a9b128e",
-          "title": "Lose Weight",
-          "description": "Target to lose 5 kg in 3 months",
-          "target": 5,
-          "unit": "kg",
-          "startDate": "2025-10-20",
-          "endDate": "2026-01-20"
-        }
+    "id": "22a683b1-4e44-48a2-8e2d-43993c034f0e",
+    "userId": "f7c962b7-0cc3-4f2d-8b3a-df0c5a9b128e",
+    "title": "Run 5k Daily",
+    "description": "Daily running target for stamina",
+    "target": 5,
+    "unit": "km",
+    "startDate": "2025-10-21T00:00:00.000+00:00",
+    "endDate": "2025-11-21T00:00:00.000+00:00",
+    "status": "COMPLETED"
+  }
 }
 
 settings {
