@@ -32,7 +32,6 @@ public class ApiFilter extends OncePerRequestFilter {
     @Override
     protected boolean shouldNotFilter(HttpServletRequest request) {
         String path = request.getRequestURI();
-        // ✅ Skip filter if request URI starts with any whitelisted path
         return EXCLUDED_PATHS.stream().anyMatch(path::startsWith);
     }
 

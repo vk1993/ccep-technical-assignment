@@ -99,7 +99,7 @@ public class HealthGoalsApiDelegateImpl implements HealthGoalsApiDelegate {
             String xCorrelationId,
             String xRequestId) {
 
-        log.info("Updating HealthGoal | id={} | correlationId={} | requestId={}", id, xCorrelationId, xRequestId);
+        log.info("updating healthgoal | id={} | correlationId={} | requestId={}", id, xCorrelationId, xRequestId);
 
         if (request == null) {
             throw new InvalidRequestException("Request body cannot be null");
@@ -130,7 +130,7 @@ public class HealthGoalsApiDelegateImpl implements HealthGoalsApiDelegate {
         }
 
         HealthGoalEntity updated = healthGoalRepository.save(entity);
-        log.info("Updated HealthGoal successfully | id={} | correlationId={}", updated.getId(), xCorrelationId);
+        log.info("updated healthgoal successfully | id={} | correlationId={}", updated.getId(), xCorrelationId);
 
         return ResponseEntity.ok(healthGoalMapper.toDto(updated));
     }
