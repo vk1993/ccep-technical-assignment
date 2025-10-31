@@ -26,6 +26,7 @@ public class UserEntity {
     @Column(nullable = false, unique = true)
     private String email;
 
+    @Builder.Default
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<HealthGoalEntity> healthGoals = new ArrayList<>();
 }
