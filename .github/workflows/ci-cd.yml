@@ -2,7 +2,7 @@ name: 🧱 CI - Build HealthGoal API #${{ github.run_number }} (${{ github.ref_n
 
 on:
   push:
-    branches: [ "main", "develop"]
+    branches: [ "main", "develop" ]
   pull_request:
     branches: [ "main", "develop" ]
 
@@ -34,13 +34,11 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-m2
 
-      - name: Build with Maven
+      - name: 🧱 Build, Test and Generate Coverage
         run: mvn -B clean verify
 
-      - name: Run Unit Tests with Coverage
-        run: mvn test jacoco:report
-
-      - name: Upload Test Coverage Report
+      - name: 📊 Upload JaCoCo Coverage Report
+        if: success()
         uses: actions/upload-artifact@v4
         with:
           name: jacoco-report
@@ -60,7 +58,9 @@ jobs:
 
       - name: Build Docker Image
         run: |
-          docker build -t ${{ env.IMAGE_NAME }} -f ${{ env.DOCKERFILE_PATH }} .
+          TAG="${{ github.ref_name }}-${{ github.run_number }}"
+          echo "Building image: ${{ env.IMAGE_NAME }}:${TAG}"
+          docker build -t ${{ env.IMAGE_NAME }}:${TAG} -f ${{ env.DOCKERFILE_PATH }} .
 
       - name: Verify Image Creation
         run: docker images | grep ${{ env.IMAGE_NAME }}
